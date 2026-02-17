@@ -7,6 +7,7 @@ import (
 )
 
 type QuizRepository interface {
+	FindByID(id uuid.UUID) (models.Quiz, error)
 	Create(data models.Quiz) (models.Quiz, error)
 	Update(id uuid.UUID, data models.Quiz) (models.Quiz, error)
 }

@@ -13,4 +13,6 @@ type User struct {
 	Email     string    `json:"email"`
 	Stats     string    `json:"stats"`
 	CreatedAt time.Time `json:"created_at"`
+
+	Team *Team `gorm:"foreignKey:UserID;references:ID"`
 }
