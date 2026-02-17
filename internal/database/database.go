@@ -16,7 +16,7 @@ func Connect() {
 	db, err := gorm.Open(
 		postgres.New(postgres.Config{
 			DSN:                  dsn,
-			PreferSimpleProtocol: true, 
+			PreferSimpleProtocol: true,
 		}),
 		&gorm.Config{},
 	)
