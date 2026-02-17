@@ -10,7 +10,6 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-
 func GenerateAccessToken(userID string, secret string) (string, error) {
 
 	claims := jwt.MapClaims{
