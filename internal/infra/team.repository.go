@@ -12,7 +12,7 @@ type TeamRepoGorm struct {
 	db *gorm.DB
 }
 
-func NewBlogRepoGorm(db *gorm.DB) repository.TeamRepository {
+func NewTeamRepoGorm(db *gorm.DB) repository.TeamRepository {
 	return &TeamRepoGorm{db: db}
 }
 

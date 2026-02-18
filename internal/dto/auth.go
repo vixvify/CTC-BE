@@ -18,3 +18,13 @@ type LoginResponse struct {
 	Username string    `json:"username"`
 	Email    string    `json:"email"`
 }
+
+type UpdateRequest struct {
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Stats    string `json:"stats"`
+}
+
+type ChangePasswordRequest struct {
+	Password string `json:"password"`
+}
