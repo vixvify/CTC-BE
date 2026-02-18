@@ -16,6 +16,10 @@ func NewBlogRepoGorm(db *gorm.DB) repository.TeamRepository {
 	return &TeamRepoGorm{db: db}
 }
 
+func (r *TeamRepoGorm) WithTx(tx *gorm.DB) repository.TeamRepository {
+	return &TeamRepoGorm{db: tx}
+}
+
 func (r *TeamRepoGorm) FindAll() ([]models.Team, error) {
 	var teams []models.Team
 	err := r.db.Find(&teams).Error

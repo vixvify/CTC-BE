@@ -16,6 +16,10 @@ func NewQuizRepoGorm(db *gorm.DB) repository.QuizRepository {
 	return &QuizRepoGorm{db: db}
 }
 
+func (r *QuizRepoGorm) WithTx(tx *gorm.DB) repository.QuizRepository {
+	return &QuizRepoGorm{db: tx}
+}
+
 func (r *QuizRepoGorm) FindByID(id uuid.UUID) (models.Quiz, error) {
 	var quiz models.Quiz
 	err := r.db.Where("id = ?", id).First(&quiz).Error
