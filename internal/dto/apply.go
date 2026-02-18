@@ -1,9 +1,6 @@
 package dto
 
-type CreateUserRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
+type ApplyRequest struct {
 	Teamname string `json:"teamname"`
 	School   string `json:"school"`
 	Call_1   string `json:"call_1"`

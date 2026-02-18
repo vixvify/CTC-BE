@@ -20,7 +20,6 @@ type Team struct {
 
 	UserID uuid.UUID `gorm:"type:uuid;not null;uniqueIndex" json:"user_id"`
 	User   *User     `gorm:"constraint:OnDelete:CASCADE;"`
-	Quiz   *Quiz     `gorm:"foreignKey:TeamID;references:ID"`
 
 	CreatedAt time.Time `json:"created_at"`
 }

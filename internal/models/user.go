@@ -15,4 +15,5 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 
 	Team *Team `gorm:"foreignKey:UserID;references:ID"`
+	Quiz *Quiz `gorm:"foreignKey:UserID;references:ID"`
 }
