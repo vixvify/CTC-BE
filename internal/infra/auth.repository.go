@@ -51,6 +51,7 @@ func (r *AuthRepoGorm) Update(id uuid.UUID, data models.User) (models.User, erro
 			"username": data.Username,
 			"email":    data.Email,
 			"stats":    data.Stats,
+			"password": data.Password,
 		}).
 		Error; err != nil {
 		return models.User{}, err

@@ -33,6 +33,7 @@ func (s *AuthService) Signup(req dto.CreateUserRequest) (models.User, error) {
 		Username:  req.Username,
 		Email:     req.Email,
 		Password:  hashed,
+		Stats:     "pending",
 		CreatedAt: time.Now(),
 	}
 	return s.repo.Signup(user)
@@ -54,6 +55,40 @@ func (s *AuthService) Login(req dto.LoginRequest) (models.User, string, error) {
 		return models.User{}, "", err
 	}
 	return user, token, nil
+}
+
+func (s *AuthService) Update(id uuid.UUID, req dto.UpdateRequest) (models.User, error) {
+	_, err := s.repo.FindByID(id)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	user := models.User{
+		Username: req.Username,
+		Email:    req.Email,
+		Stats:    req.Stats,
+	}
+	return s.repo.Update(id, user)
+}
+
+func (s *AuthService) ChangePassword(id uuid.UUID, req dto.ChangePasswordRequest) (models.User, error) {
+	_, err := s.repo.FindByID(id)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	user := models.User{
+		Password: req.Password,
+	}
+	return s.repo.Update(id, user)
+}
+
+func (s *AuthService) Delete(id uuid.UUID) error {
+	_, err := s.repo.FindByID(id)
+	if err != nil {
+		return err
+	}
+	return s.repo.Delete(id)
 }
 
 func (s *AuthService) Me(token string) (dto.LoginResponse, error) {
