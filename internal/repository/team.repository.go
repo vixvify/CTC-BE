@@ -11,5 +11,4 @@ type TeamRepository interface {
 	FindByID(id uuid.UUID) (models.Team, error)
 	Create(data models.Team) (models.Team, error)
 	Update(id uuid.UUID, data models.Team) (models.Team, error)
-	Delete(id uuid.UUID) error
 }

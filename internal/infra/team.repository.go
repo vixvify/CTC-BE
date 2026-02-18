@@ -59,7 +59,3 @@ func (r *TeamRepoGorm) Update(id uuid.UUID, data models.Team) (models.Team, erro
 
 	return team, nil
 }
-
-func (r *TeamRepoGorm) Delete(id uuid.UUID) error {
-	return r.db.Delete(&models.Team{}, "id = ?", id).Error
-}

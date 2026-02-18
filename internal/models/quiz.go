@@ -16,8 +16,8 @@ type Quiz struct {
 	Quiz_4   string    `json:"quiz_4"`
 	Quiz_5   string    `json:"quiz_5"`
 
-	TeamID uuid.UUID `gorm:"type:uuid;not null;uniqueIndex" json:"team_id"`
-	Team   *Team     `gorm:"constraint:OnDelete:CASCADE;"`
+	UserID uuid.UUID `gorm:"type:uuid;not null;uniqueIndex" json:"user_id"`
+	User   *User     `gorm:"constraint:OnDelete:CASCADE;"`
 
 	CreatedAt time.Time `json:"created_at"`
 }
