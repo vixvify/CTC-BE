@@ -10,10 +10,10 @@ import (
 )
 
 type ApplyService struct {
-	uow repository.UnitOfWork
+	uow repository.ApplyRepository
 }
 
-func NewApplyService(uow repository.UnitOfWork) *ApplyService {
+func NewApplyService(uow repository.ApplyRepository) *ApplyService {
 	return &ApplyService{uow: uow}
 }
 

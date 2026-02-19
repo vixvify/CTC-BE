@@ -10,7 +10,7 @@ type gormUOW struct {
 	db *gorm.DB
 }
 
-func NewUnitOfWork(db *gorm.DB) repository.UnitOfWork {
+func NewApplyRepository(db *gorm.DB) repository.ApplyRepository {
 	return &gormUOW{db: db}
 }
 
