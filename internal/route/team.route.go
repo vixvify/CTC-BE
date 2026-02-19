@@ -7,9 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterTeamRoutes(r *gin.RouterGroup, h *handler.TeamHandler) {
+func RegisterTeamRoutes(r *gin.RouterGroup, h *handler.TeamHandler, jwtSecret string) {
 	r.Use(middleware.RateLimitMiddleware())
-	r.GET("", h.GetTeams)
-	r.GET("/:id", h.GetTeamByID)
-	r.PUT("/:id", h.UpdateTeam)
+	r.GET("", middleware.JWTAuth(jwtSecret), h.GetTeams)
+	r.GET("/:id", middleware.JWTAuth(jwtSecret), h.GetTeamByID)
+	r.PUT("/:id", middleware.JWTAuth(jwtSecret), h.UpdateTeam)
 }
