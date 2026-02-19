@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterQuizRoutes(r *gin.RouterGroup, h *handler.QuizHandler) {
+func RegisterQuizRoutes(r *gin.RouterGroup, h *handler.QuizHandler, jwtSecret string) {
 	r.Use(middleware.RateLimitMiddleware())
-	r.GET("/:id", h.GetQuizByID)
-	r.PUT("/:id", h.UpdateQuiz)
+	r.GET("/:id", middleware.JWTAuth(jwtSecret), h.GetQuizByID)
+	r.PUT("/:id", middleware.JWTAuth(jwtSecret), h.UpdateQuiz)
 }

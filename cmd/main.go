@@ -47,9 +47,9 @@ func main() {
 
 	api := r.Group("/api")
 	route.RegisterAuthRoutes(api.Group("/auth"), authHandler)
-	route.RegisterTeamRoutes(api.Group("/team"), teamHandler)
-	route.RegisterQuizRoutes(api.Group("/quiz"), quizHandler)
-	route.RegisterApplyRoutes(api.Group("/apply"), applyHandler)
+	route.RegisterTeamRoutes(api.Group("/team"), teamHandler, jwtSecret)
+	route.RegisterQuizRoutes(api.Group("/quiz"), quizHandler, jwtSecret)
+	route.RegisterApplyRoutes(api.Group("/apply"), applyHandler, jwtSecret)
 
 	r.Run(":" + PORT)
 

@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterApplyRoutes(r *gin.RouterGroup, h *handler.ApplyHandler) {
+func RegisterApplyRoutes(r *gin.RouterGroup, h *handler.ApplyHandler, jwtSecret string) {
 	r.Use(middleware.RateLimitMiddleware())
-	r.POST("/", h.ApplyCamp)
+	r.POST("/", middleware.JWTAuth(jwtSecret), h.ApplyCamp)
 }
