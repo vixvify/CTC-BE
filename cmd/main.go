@@ -33,7 +33,8 @@ func main() {
 	quizService := service.NewQuizService(quizRepo)
 	quizHandler := handler.NewQuizHandler(quizService)
 
-	applyService := service.NewApplyService(database.DB, teamRepo, quizRepo)
+	uow := infra.NewUnitOfWork(database.DB)
+	applyService := service.NewApplyService(uow)
 	applyHandler := handler.NewApplyHandler(applyService)
 
 	r := gin.Default()

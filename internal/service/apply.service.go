@@ -7,26 +7,20 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type ApplyService struct {
-	db       *gorm.DB
-	teamrepo repository.TeamRepository
-	quizrepo repository.QuizRepository
+	uow repository.UnitOfWork
 }
 
-func NewApplyService(db *gorm.DB, t repository.TeamRepository, q repository.QuizRepository) *ApplyService {
-	return &ApplyService{db: db, teamrepo: t, quizrepo: q}
+func NewApplyService(uow repository.UnitOfWork) *ApplyService {
+	return &ApplyService{uow: uow}
 }
 
 func (s *ApplyService) ApplyCamp(req dto.ApplyRequest, userID uuid.UUID) (dto.ApplyRequest, error) {
-	err := s.db.Transaction(func(tx *gorm.DB) error {
+	err := s.uow.Do(func(team repository.TeamRepository, quiz repository.QuizRepository) error {
 
-		teamRepo := s.teamrepo.WithTx(tx)
-		quizRepo := s.quizrepo.WithTx(tx)
-
-		team := models.Team{
+		t := models.Team{
 			ID:        uuid.New(),
 			Teamname:  req.Teamname,
 			School:    req.School,
@@ -41,11 +35,11 @@ func (s *ApplyService) ApplyCamp(req dto.ApplyRequest, userID uuid.UUID) (dto.Ap
 			CreatedAt: time.Now(),
 		}
 
-		if _, err := teamRepo.Create(team); err != nil {
+		if _, err := team.Create(t); err != nil {
 			return err
 		}
 
-		quiz := models.Quiz{
+		q := models.Quiz{
 			ID:        uuid.New(),
 			Verified:  req.Verified,
 			Video:     req.Video,
@@ -58,7 +52,7 @@ func (s *ApplyService) ApplyCamp(req dto.ApplyRequest, userID uuid.UUID) (dto.Ap
 			CreatedAt: time.Now(),
 		}
 
-		if _, err := quizRepo.Create(quiz); err != nil {
+		if _, err := quiz.Create(q); err != nil {
 			return err
 		}
 
