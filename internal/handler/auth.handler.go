@@ -6,6 +6,7 @@ import (
 	"server/internal/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type AuthHandler struct {
@@ -82,6 +83,131 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		"status":     "success",
 		"statusCode": 200,
 	})
+}
+
+func (h *AuthHandler) Update(c *gin.Context) {
+	var data dto.UpdateRequest
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 400})
+		return
+	}
+
+	userIDStr, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 401})
+		return
+	}
+
+	userID, err := uuid.Parse(userIDStr.(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 400})
+		return
+	}
+
+	updated, err := h.service.Update(userID, data)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 500})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"data":       updated,
+		"status":     "success",
+		"statusCode": 200,
+	})
+
+}
+
+func (h *AuthHandler) ResetPassword(c *gin.Context) {
+	var data dto.ChangePasswordRequest
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 400})
+		return
+	}
+
+	userIDStr, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 401})
+		return
+	}
+
+	userID, err := uuid.Parse(userIDStr.(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 400})
+		return
+	}
+
+	updated, err := h.service.ChangePassword(userID, data)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 500})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"data":       updated,
+		"status":     "success",
+		"statusCode": 200,
+	})
+
+}
+
+func (h *AuthHandler) Delete(c *gin.Context) {
+	userIDStr, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 401})
+		return
+	}
+
+	userID, err := uuid.Parse(userIDStr.(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 400})
+		return
+	}
+
+	err = h.service.Delete(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 500})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"data":       nil,
+		"status":     "success",
+		"statusCode": 200,
+	})
+
 }
 
 func (h *AuthHandler) Me(c *gin.Context) {
