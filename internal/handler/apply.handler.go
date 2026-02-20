@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"net/http"
 	"server/internal/dto"
+	"server/internal/response"
 	"server/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -21,42 +21,26 @@ func (h *ApplyHandler) ApplyCamp(c *gin.Context) {
 	var data dto.ApplyRequest
 
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400,
-		})
+		response.BadRequest(c, err.Error())
 		return
 	}
 
 	userIDStr, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 401})
+		response.Unauthorized(c, "User ID not found in context")
 		return
 	}
 
 	userID, err := uuid.Parse(userIDStr.(string))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400})
+		response.BadRequest(c, "Invalid user ID format")
 		return
 	}
 
 	created, err := h.service.ApplyCamp(data, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 500})
+		response.Internal(c, err.Error())
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{
-		"data":       created,
-		"status":     "success",
-		"statusCode": 201})
+	response.Created(c, created)
 }

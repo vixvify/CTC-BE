@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"net/http"
 	"server/internal/dto"
+	"server/internal/response"
 	"server/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -20,17 +20,10 @@ func NewTeamHandler(s *service.TeamService) *TeamHandler {
 func (h *TeamHandler) GetTeams(c *gin.Context) {
 	teams, err := h.service.GetTeams()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 500})
+		response.Internal(c, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"data":       teams,
-		"status":     "success",
-		"statusCode": 200,
-	})
+	response.OK(c, teams)
 }
 
 func (h *TeamHandler) GetTeamByID(c *gin.Context) {
@@ -38,26 +31,16 @@ func (h *TeamHandler) GetTeamByID(c *gin.Context) {
 
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		c.JSON(400, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400})
+		response.BadRequest(c, "Invalid team ID format")
 		return
 	}
 
 	team, err := h.service.GetTeamByID(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 500})
+		response.Internal(c, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"data":       team,
-		"status":     "success",
-		"statusCode": 200,
-	})
+	response.OK(c, team)
 }
 
 func (h *TeamHandler) UpdateTeam(c *gin.Context) {
@@ -66,51 +49,31 @@ func (h *TeamHandler) UpdateTeam(c *gin.Context) {
 
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400})
+		response.BadRequest(c, "Invalid team ID format")
 		return
 	}
 
 	if err := c.ShouldBindJSON(&updatedteam); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400,
-		})
+		response.BadRequest(c, err.Error())
 		return
 	}
 
 	userIDStr, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 401})
+		response.Unauthorized(c, "User ID not found in context")
 		return
 	}
 
 	userID, err := uuid.Parse(userIDStr.(string))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400})
+		response.BadRequest(c, "Invalid user ID format")
 		return
 	}
 
 	updated, err := h.service.UpdateTeam(id, updatedteam, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 500})
+		response.Internal(c, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"data":       updated,
-		"status":     "success",
-		"statusCode": 200,
-	})
+	response.OK(c, updated)
 }

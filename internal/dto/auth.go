@@ -17,6 +17,7 @@ type LoginResponse struct {
 	ID       uuid.UUID `json:"id"`
 	Username string    `json:"username"`
 	Email    string    `json:"email"`
+	Stats    string    `json:"stats"`
 }
 
 type UpdateRequest struct {

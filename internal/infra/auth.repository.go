@@ -57,12 +57,12 @@ func (r *AuthRepoGorm) Update(id uuid.UUID, data models.User) (models.User, erro
 		return models.User{}, err
 	}
 
-	var blog models.User
-	if err := r.db.First(&blog, "id = ?", id).Error; err != nil {
+	var user models.User
+	if err := r.db.First(&user, "id = ?", id).Error; err != nil {
 		return models.User{}, err
 	}
 
-	return blog, nil
+	return user, nil
 }
 
 func (r *AuthRepoGorm) Delete(userID uuid.UUID) error {

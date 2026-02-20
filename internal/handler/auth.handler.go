@@ -3,6 +3,8 @@ package handler
 import (
 	"net/http"
 	"server/internal/dto"
+	"server/internal/models"
+	"server/internal/response"
 	"server/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -21,25 +23,20 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 	var data dto.CreateUserRequest
 
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400})
+		response.BadRequest(c, err.Error())
 		return
 	}
 
 	created, err := h.service.Signup(data)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 500})
+		response.Internal(c, err.Error())
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{
-		"data":       created,
-		"status":     "success",
-		"statusCode": 201,
+	response.Created(c, models.User{
+		ID:       created.ID,
+		Email:    created.Email,
+		Username: created.Username,
+		Stats:    created.Stats,
 	})
 
 }
@@ -48,19 +45,13 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	var data dto.LoginRequest
 
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400})
+		response.BadRequest(c, err.Error())
 		return
 	}
 
 	user, token, err := h.service.Login(data)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 500})
+		response.Internal(c, err.Error())
 		return
 	}
 
@@ -74,14 +65,11 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		SameSite: http.SameSiteLaxMode,
 	})
 
-	c.JSON(200, gin.H{
-		"data": dto.LoginResponse{
-			ID:       user.ID,
-			Email:    user.Email,
-			Username: user.Username,
-		},
-		"status":     "success",
-		"statusCode": 200,
+	response.OK(c, dto.LoginResponse{
+		ID:       user.ID,
+		Email:    user.Email,
+		Username: user.Username,
+		Stats:    user.Stats,
 	})
 }
 
@@ -89,43 +77,32 @@ func (h *AuthHandler) Update(c *gin.Context) {
 	var data dto.UpdateRequest
 
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400})
+		response.BadRequest(c, err.Error())
 		return
 	}
 
 	userIDStr, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 401})
+		response.Unauthorized(c, "User ID not found in context")
 		return
 	}
 
 	userID, err := uuid.Parse(userIDStr.(string))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400})
+		response.BadRequest(c, "Invalid user ID format")
 		return
 	}
 
 	updated, err := h.service.Update(userID, data)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 500})
+		response.Internal(c, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"data":       updated,
-		"status":     "success",
-		"statusCode": 200,
+	response.OK(c, models.User{
+		ID:       updated.ID,
+		Email:    updated.Email,
+		Username: updated.Username,
+		Stats:    updated.Stats,
 	})
 
 }
@@ -134,43 +111,32 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 	var data dto.ChangePasswordRequest
 
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400})
+		response.BadRequest(c, err.Error())
 		return
 	}
 
 	userIDStr, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 401})
+		response.Unauthorized(c, "User ID not found in context")
 		return
 	}
 
 	userID, err := uuid.Parse(userIDStr.(string))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400})
+		response.BadRequest(c, "Invalid user ID format")
 		return
 	}
 
 	updated, err := h.service.ChangePassword(userID, data)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 500})
+		response.Internal(c, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"data":       updated,
-		"status":     "success",
-		"statusCode": 200,
+	response.OK(c, models.User{
+		ID:       updated.ID,
+		Email:    updated.Email,
+		Username: updated.Username,
+		Stats:    updated.Stats,
 	})
 
 }
@@ -178,64 +144,37 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 func (h *AuthHandler) Delete(c *gin.Context) {
 	userIDStr, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 401})
+		response.Unauthorized(c, "User ID not found in context")
 		return
 	}
 
 	userID, err := uuid.Parse(userIDStr.(string))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 400})
+		response.BadRequest(c, "Invalid user ID format")
 		return
 	}
 
 	err = h.service.Delete(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
-			"status":     "error",
-			"statusCode": 500})
+		response.Internal(c, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"data":       nil,
-		"status":     "success",
-		"statusCode": 200,
-	})
-
+	response.OK(c, nil)
 }
 
 func (h *AuthHandler) Me(c *gin.Context) {
 	cookie, err := c.Request.Cookie("access_token")
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"data":       nil,
-			"status":     "unauthorized",
-			"statusCode": 401,
-		})
+		response.Unauthorized(c, "Access token not found")
 		return
 	}
 
 	user, err := h.service.Me(cookie.Value)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"data":       nil,
-			"status":     "unauthorized",
-			"statusCode": 201,
-		})
+		response.Unauthorized(c, "Unverified token")
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"data":       user,
-		"status":     "success",
-		"statusCode": 200,
-	})
+	response.OK(c, user)
 }
 
 func (h *AuthHandler) Logout(c *gin.Context) {
@@ -250,9 +189,5 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 		SameSite: http.SameSiteLaxMode,
 	})
 
-	c.JSON(http.StatusOK, gin.H{
-		"data":       nil,
-		"statusCode": 200,
-		"status":     "success",
-	})
+	response.OK(c, nil)
 }
