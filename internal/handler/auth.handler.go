@@ -21,17 +21,21 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 400})
 		return
 	}
 
 	created, err := h.service.Signup(data)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 500})
 		return
 	}
-	c.JSON(201, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"data":       created,
 		"status":     "success",
 		"statusCode": 201,
@@ -44,14 +48,18 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 400})
 		return
 	}
 
 	user, token, err := h.service.Login(data)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 500})
 		return
 	}
 
@@ -80,8 +88,9 @@ func (h *AuthHandler) Me(c *gin.Context) {
 	cookie, err := c.Request.Cookie("access_token")
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
+			"data":       nil,
 			"status":     "unauthorized",
-			"statusCode": 201,
+			"statusCode": 401,
 		})
 		return
 	}
@@ -89,6 +98,7 @@ func (h *AuthHandler) Me(c *gin.Context) {
 	user, err := h.service.Me(cookie.Value)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
+			"data":       nil,
 			"status":     "unauthorized",
 			"statusCode": 201,
 		})
@@ -115,6 +125,8 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 	})
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": "success",
+		"data":       nil,
+		"statusCode": 200,
+		"status":     "success",
 	})
 }

@@ -22,27 +22,41 @@ func (h *ApplyHandler) ApplyCamp(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 400,
 		})
 		return
 	}
 
 	userIDStr, exists := c.Get("userID")
 	if !exists {
-		c.JSON(401, gin.H{"error": "unauthorized"})
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 401})
 		return
 	}
 
 	userID, err := uuid.Parse(userIDStr.(string))
 	if err != nil {
-		c.JSON(400, gin.H{"error": "invalid user id"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 400})
 		return
 	}
 
 	created, err := h.service.ApplyCamp(data, userID)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"data":       nil,
+			"status":     "error",
+			"statusCode": 500})
 		return
 	}
-	c.JSON(201, created)
+	c.JSON(http.StatusCreated, gin.H{
+		"data":       created,
+		"status":     "success",
+		"statusCode": 201})
 }
