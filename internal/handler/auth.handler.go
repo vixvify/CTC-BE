@@ -32,9 +32,7 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 		response.Internal(c, err.Error())
 		return
 	}
-	response.Created(c, dto.CreateUserResponse{
-		UserDTO: mapper.ToUserResponse(created),
-	})
+	response.Created(c, mapper.ToUserResponse(created))
 
 }
 
@@ -66,7 +64,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 func (h *AuthHandler) Update(c *gin.Context) {
-	var data dto.UpdateRequest
+	var data dto.UserDTO
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		response.BadRequest(c, err.Error())
@@ -90,9 +88,7 @@ func (h *AuthHandler) Update(c *gin.Context) {
 		response.Internal(c, err.Error())
 		return
 	}
-	response.OK(c, dto.UpdateResponse{
-		UserDTO: mapper.ToUserResponse(updated),
-	})
+	response.OK(c, mapper.ToUserResponse(updated))
 
 }
 
@@ -158,9 +154,7 @@ func (h *AuthHandler) Me(c *gin.Context) {
 		response.Unauthorized(c, "Unverified token")
 		return
 	}
-	response.OK(c, dto.MeResponse{
-		UserDTO: mapper.ToUserResponse(user),
-	})
+	response.OK(c, mapper.ToUserResponse(user))
 }
 
 func (h *AuthHandler) Logout(c *gin.Context) {

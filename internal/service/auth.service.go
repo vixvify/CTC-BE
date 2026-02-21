@@ -57,7 +57,7 @@ func (s *AuthService) Login(req dto.LoginRequest) (models.User, string, error) {
 	return user, token, nil
 }
 
-func (s *AuthService) Update(id uuid.UUID, req dto.UpdateRequest) (models.User, error) {
+func (s *AuthService) Update(id uuid.UUID, req dto.UserDTO) (models.User, error) {
 	_, err := s.repo.FindByID(id)
 	if err != nil {
 		return models.User{}, err
