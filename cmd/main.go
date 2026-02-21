@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"server/internal/database"
 	"server/internal/handler"
@@ -10,9 +11,14 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Println("CONFIG NOT FOUND")
+	}
 	database.Connect()
 	jwtSecret := os.Getenv("JWT_SECRET")
 	PORT := os.Getenv("PORT")
