@@ -33,7 +33,7 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 		return
 	}
 	response.Created(c, dto.CreateUserResponse{
-		UserDTO: mapper.ToUserDTO(created),
+		UserDTO: mapper.ToUserResponse(created),
 	})
 
 }
@@ -91,7 +91,7 @@ func (h *AuthHandler) Update(c *gin.Context) {
 		return
 	}
 	response.OK(c, dto.UpdateResponse{
-		UserDTO: mapper.ToUserDTO(updated),
+		UserDTO: mapper.ToUserResponse(updated),
 	})
 
 }
@@ -159,7 +159,7 @@ func (h *AuthHandler) Me(c *gin.Context) {
 		return
 	}
 	response.OK(c, dto.MeResponse{
-		UserDTO: mapper.ToUserDTO(user),
+		UserDTO: mapper.ToUserResponse(user),
 	})
 }
 
