@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 	"server/internal/dto"
-	"server/internal/models"
+	"server/internal/mapper"
 	"server/internal/response"
 	"server/internal/service"
 
@@ -32,11 +32,8 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 		response.Internal(c, err.Error())
 		return
 	}
-	response.Created(c, models.User{
-		ID:       created.ID,
-		Email:    created.Email,
-		Username: created.Username,
-		Stats:    created.Stats,
+	response.Created(c, dto.CreateUserResponse{
+		UserDTO: mapper.ToUserDTO(created),
 	})
 
 }
@@ -49,7 +46,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	user, token, err := h.service.Login(data)
+	_, token, err := h.service.Login(data)
 	if err != nil {
 		response.Internal(c, err.Error())
 		return
@@ -65,12 +62,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		SameSite: http.SameSiteLaxMode,
 	})
 
-	response.OK(c, dto.LoginResponse{
-		ID:       user.ID,
-		Email:    user.Email,
-		Username: user.Username,
-		Stats:    user.Stats,
-	})
+	response.OK(c, nil)
 }
 
 func (h *AuthHandler) Update(c *gin.Context) {
@@ -98,11 +90,8 @@ func (h *AuthHandler) Update(c *gin.Context) {
 		response.Internal(c, err.Error())
 		return
 	}
-	response.OK(c, models.User{
-		ID:       updated.ID,
-		Email:    updated.Email,
-		Username: updated.Username,
-		Stats:    updated.Stats,
+	response.OK(c, dto.UpdateResponse{
+		UserDTO: mapper.ToUserDTO(updated),
 	})
 
 }
@@ -127,17 +116,12 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 		return
 	}
 
-	updated, err := h.service.ChangePassword(userID, data)
+	_, err = h.service.ChangePassword(userID, data)
 	if err != nil {
 		response.Internal(c, err.Error())
 		return
 	}
-	response.OK(c, models.User{
-		ID:       updated.ID,
-		Email:    updated.Email,
-		Username: updated.Username,
-		Stats:    updated.Stats,
-	})
+	response.OK(c, nil)
 
 }
 
@@ -174,7 +158,9 @@ func (h *AuthHandler) Me(c *gin.Context) {
 		response.Unauthorized(c, "Unverified token")
 		return
 	}
-	response.OK(c, user)
+	response.OK(c, dto.MeResponse{
+		UserDTO: mapper.ToUserDTO(user),
+	})
 }
 
 func (h *AuthHandler) Logout(c *gin.Context) {

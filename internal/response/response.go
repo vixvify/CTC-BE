@@ -45,3 +45,7 @@ func Internal(c *gin.Context, err string) {
 func NotFound(c *gin.Context, err string) {
 	JSON(c, http.StatusNotFound, nil, err)
 }
+
+func Forbidden(c *gin.Context, err string) {
+	JSON(c, http.StatusForbidden, nil, err)
+}

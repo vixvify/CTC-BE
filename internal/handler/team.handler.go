@@ -2,6 +2,7 @@ package handler
 
 import (
 	"server/internal/dto"
+	"server/internal/mapper"
 	"server/internal/response"
 	"server/internal/service"
 
@@ -23,7 +24,7 @@ func (h *TeamHandler) GetTeams(c *gin.Context) {
 		response.Internal(c, err.Error())
 		return
 	}
-	response.OK(c, teams)
+	response.OK(c, mapper.ToTeamResponseList(teams))
 }
 
 func (h *TeamHandler) GetTeamByID(c *gin.Context) {
@@ -40,11 +41,11 @@ func (h *TeamHandler) GetTeamByID(c *gin.Context) {
 		response.Internal(c, err.Error())
 		return
 	}
-	response.OK(c, team)
+	response.OK(c, mapper.ToTeamResponse(team))
 }
 
 func (h *TeamHandler) UpdateTeam(c *gin.Context) {
-	var updatedteam dto.ApplyRequest
+	var updatedteam dto.TeamRequest
 	idStr := c.Param("id")
 
 	id, err := uuid.Parse(idStr)
@@ -75,5 +76,5 @@ func (h *TeamHandler) UpdateTeam(c *gin.Context) {
 		response.Internal(c, err.Error())
 		return
 	}
-	response.OK(c, updated)
+	response.OK(c, mapper.ToTeamResponse(updated))
 }

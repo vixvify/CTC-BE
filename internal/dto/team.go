@@ -2,7 +2,20 @@ package dto
 
 import "github.com/google/uuid"
 
-type ApplyRequest struct {
+type TeamResponse struct {
+	ID       uuid.UUID `json:"id"`
+	Teamname string    `json:"teamname"`
+	School   string    `json:"school"`
+	Call_1   string    `json:"call_1"`
+	Call_2   string    `json:"call_2"`
+	Relation string    `json:"relation"`
+	Name_1   string    `json:"name_1"`
+	Name_2   string    `json:"name_2"`
+	Name_3   string    `json:"name_3"`
+	Name_4   string    `json:"name_4"`
+}
+
+type TeamRequest struct {
 	Teamname string `json:"teamname"`
 	School   string `json:"school"`
 	Call_1   string `json:"call_1"`
@@ -19,9 +32,4 @@ type ApplyRequest struct {
 	Quiz_3   string `json:"quiz_3"`
 	Quiz_4   string `json:"quiz_4"`
 	Quiz_5   string `json:"quiz_5"`
-}
-
-type ApplyResponse struct {
-	TeamID uuid.UUID `json:"teamId"`
-	QuizID uuid.UUID `json:"quizId"`
 }
