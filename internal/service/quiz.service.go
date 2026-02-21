@@ -21,7 +21,7 @@ func (s *QuizService) GetQuizByID(id uuid.UUID) (models.Quiz, error) {
 	return s.repo.FindByID(id)
 }
 
-func (s *QuizService) UpdateQuiz(id uuid.UUID, req dto.ApplyRequest, userID uuid.UUID) (models.Quiz, error) {
+func (s *QuizService) UpdateQuiz(id uuid.UUID, req dto.QuizRequest, userID uuid.UUID) (models.Quiz, error) {
 	teambyid, err := s.repo.FindByID(id)
 	if err != nil {
 		return models.Quiz{}, err
@@ -31,14 +31,14 @@ func (s *QuizService) UpdateQuiz(id uuid.UUID, req dto.ApplyRequest, userID uuid
 		return models.Quiz{}, errors.New("forbidden")
 	}
 
-	team := models.Quiz{
-		Verified: req.Teamname,
-		Video:    req.School,
-		Quiz_1:   req.Call_1,
-		Quiz_2:   req.Call_2,
-		Quiz_3:   req.Relation,
-		Quiz_4:   req.Name_1,
-		Quiz_5:   req.Name_2,
+	quiz := models.Quiz{
+		Verified: req.Verified,
+		Video:    req.Video,
+		Quiz_1:   req.Quiz_1,
+		Quiz_2:   req.Quiz_2,
+		Quiz_3:   req.Quiz_3,
+		Quiz_4:   req.Quiz_4,
+		Quiz_5:   req.Quiz_5,
 	}
-	return s.repo.Update(id, team)
+	return s.repo.Update(id, quiz)
 }

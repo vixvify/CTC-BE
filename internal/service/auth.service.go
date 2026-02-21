@@ -45,7 +45,7 @@ func (s *AuthService) Login(req dto.LoginRequest) (models.User, string, error) {
 		return models.User{}, "", err
 	}
 	if !util.CheckPassword(user.Password, req.Password) {
-		return models.User{}, "", errors.New("invalid credentials")
+		return models.User{}, "", errors.New("wrong password")
 	}
 	token, err := util.GenerateAccessToken(
 		user.ID.String(),
@@ -91,26 +91,22 @@ func (s *AuthService) Delete(id uuid.UUID) error {
 	return s.repo.Delete(id)
 }
 
-func (s *AuthService) Me(token string) (dto.LoginResponse, error) {
+func (s *AuthService) Me(token string) (models.User, error) {
 
 	claims, err := util.VerifyAccessToken(token, s.jwtSecret)
 	if err != nil {
-		return dto.LoginResponse{}, err
+		return models.User{}, err
 	}
 
 	userID, err := uuid.Parse(claims.Subject)
 	if err != nil {
-		return dto.LoginResponse{}, err
+		return models.User{}, err
 	}
 
 	user, err := s.repo.FindByID(userID)
 	if err != nil {
-		return dto.LoginResponse{}, err
+		return models.User{}, err
 	}
 
-	return dto.LoginResponse{
-		ID:       user.ID,
-		Email:    user.Email,
-		Username: user.Username,
-	}, nil
+	return user, nil
 }

@@ -25,7 +25,7 @@ func (s *TeamService) GetTeamByID(id uuid.UUID) (models.Team, error) {
 	return s.repo.FindByID(id)
 }
 
-func (s *TeamService) UpdateTeam(id uuid.UUID, req dto.ApplyRequest, userID uuid.UUID) (models.Team, error) {
+func (s *TeamService) UpdateTeam(id uuid.UUID, req dto.TeamRequest, userID uuid.UUID) (models.Team, error) {
 	teambyid, err := s.repo.FindByID(id)
 	if err != nil {
 		return models.Team{}, err

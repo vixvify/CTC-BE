@@ -17,11 +17,13 @@ func NewApplyService(uow repository.ApplyRepository) *ApplyService {
 	return &ApplyService{uow: uow}
 }
 
-func (s *ApplyService) ApplyCamp(req dto.ApplyRequest, userID uuid.UUID) (dto.ApplyRequest, error) {
-	err := s.uow.Do(func(team repository.TeamRepository, quiz repository.QuizRepository) error {
+func (s *ApplyService) ApplyCamp(req dto.ApplyRequest, userID uuid.UUID) (dto.ApplyResponse, error) {
+	teamID := uuid.New()
+	quizID := uuid.New()
 
+	err := s.uow.Do(func(team repository.TeamRepository, quiz repository.QuizRepository) error {
 		t := models.Team{
-			ID:        uuid.New(),
+			ID:        teamID,
 			Teamname:  req.Teamname,
 			School:    req.School,
 			Call_1:    req.Call_1,
@@ -40,7 +42,7 @@ func (s *ApplyService) ApplyCamp(req dto.ApplyRequest, userID uuid.UUID) (dto.Ap
 		}
 
 		q := models.Quiz{
-			ID:        uuid.New(),
+			ID:        quizID,
 			Verified:  req.Verified,
 			Video:     req.Video,
 			Quiz_1:    req.Quiz_1,
@@ -60,8 +62,11 @@ func (s *ApplyService) ApplyCamp(req dto.ApplyRequest, userID uuid.UUID) (dto.Ap
 	})
 
 	if err != nil {
-		return dto.ApplyRequest{}, err
+		return dto.ApplyResponse{}, err
 	}
 
-	return req, nil
+	return dto.ApplyResponse{
+		TeamID: teamID,
+		QuizID: quizID,
+	}, nil
 }

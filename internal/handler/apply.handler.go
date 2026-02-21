@@ -42,5 +42,8 @@ func (h *ApplyHandler) ApplyCamp(c *gin.Context) {
 		response.Internal(c, err.Error())
 		return
 	}
-	response.Created(c, created)
+	response.Created(c, dto.ApplyResponse{
+		TeamID: created.TeamID,
+		QuizID: created.QuizID,
+	})
 }

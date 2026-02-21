@@ -2,6 +2,7 @@ package handler
 
 import (
 	"server/internal/dto"
+	"server/internal/mapper"
 	"server/internal/response"
 	"server/internal/service"
 
@@ -31,11 +32,11 @@ func (h *QuizHandler) GetQuizByID(c *gin.Context) {
 		response.Internal(c, err.Error())
 		return
 	}
-	response.OK(c, team)
+	response.OK(c, mapper.ToQuizResponse(team))
 }
 
 func (h *QuizHandler) UpdateQuiz(c *gin.Context) {
-	var updatedquiz dto.ApplyRequest
+	var updatedquiz dto.QuizRequest
 	idStr := c.Param("id")
 
 	id, err := uuid.Parse(idStr)
@@ -66,5 +67,5 @@ func (h *QuizHandler) UpdateQuiz(c *gin.Context) {
 		response.Internal(c, err.Error())
 		return
 	}
-	response.OK(c, updated)
+	response.OK(c, mapper.ToQuizResponse(updated))
 }
