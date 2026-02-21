@@ -51,6 +51,6 @@ func main() {
 	route.RegisterQuizRoutes(api.Group("/quiz"), quizHandler, jwtSecret)
 	route.RegisterApplyRoutes(api.Group("/apply"), applyHandler, jwtSecret)
 
-	r.Run(":" + PORT)
+	r.Run(":" + PORT + "✅")
 
 }
